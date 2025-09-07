@@ -16,9 +16,9 @@ personaje = pg.image.load("personaje.png").convert_alpha() # Cargamos el persona
 rectPersonaje = personaje.get_rect()              
 
 ### Configuramos una serie de figuras
-list = [
+plataformas = [
     pg.Rect(0, 670, 1280, 50),  # Suelo
-    pg.Rect(200, 600, 280, 50)
+    pg.Rect(500, 600, 280, 50)
 ]  
 
 clock = pg.time.Clock()
@@ -45,10 +45,18 @@ def movement():
     #     rectPersonaje.y += 5
         
 def physics():
-    if rectPersonaje.collidelistall(list):  # Colisión del personaje con el rectángulo rojo
-        rectPersonaje.y -= 5  # Si colisiona, lo movemos hacia arriba
-    if not rectPersonaje.collidelistall(list) and not jumping and rectPersonaje.y < WINDOW_HEIGHT - personaje.get_height():
-        rectPersonaje.y += 5  # Aplicamos gravedad si no está saltando y no está en el suelo 
+    global jumping, VELOCITY_Y
+    # Aplicar gravedad solo si no está saltando
+    if not jumping and rectPersonaje.y < WINDOW_HEIGHT - personaje.get_height():
+        rectPersonaje.y += 5
+
+    # Comprobar colisión después de mover
+    idx = rectPersonaje.collidelist(plataformas)
+    if idx != -1:
+        plataforma = plataformas[idx]
+        rectPersonaje.bottom = plataforma.top
+        jumping = False
+        VELOCITY_Y = JUMP_HEIGHT
 
 
 def coordenadas_mouse(): 
@@ -57,14 +65,14 @@ def coordenadas_mouse():
     pg.display.set_caption(f"Simulador de la Vida I - {coordenadas}")  # Mostramos las coordenadas en el título de la ventana
 
 pg.draw.rect(screen, (0, 0, 255), rectPersonaje) # Dibujamos el rectángulo azul detras del personaje
-pg.Rect.update(rectPersonaje, (rectPersonaje.x, rectPersonaje.y), (rectPersonaje.size[0]+1, rectPersonaje.size[1]+1))      
+pg.Rect.update(rectPersonaje, (rectPersonaje.x, rectPersonaje.y), (rectPersonaje.size[0]+70, rectPersonaje.size[1]+70))      
 screen.blit(personaje, rectPersonaje)          # Dibujamos el personaje
 pg.Rect.update(rectPersonaje, (0,378), personaje.get_size())          # Actualizamos la posición del personaje
 
 while run: 
 
     screen.fill((255, 255, 255))    # Establecemos el fondo blanco  
-    for rect in list:
+    for rect in plataformas:
         pg.draw.rect(screen, (255, 0, 0), rect)  # Dibujamos el rectángulo rojo
 
     pg.draw.rect(screen, (0, 0, 255), rectPersonaje) # Dibujamos el rectángulo azul detras del personaje
