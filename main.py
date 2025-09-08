@@ -1,31 +1,64 @@
-import pygame as pg
+import pygame
 
-pg.init()
+pygame.init()
 
+### Variables ###
 jumping = False
 GRAVITY = 1
 JUMP_HEIGHT = 15
 VELOCITY_Y = JUMP_HEIGHT
 
-WINDOW_WIDTH, WINDOW_HEIGHT = 1280, 720
-screen = pg.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+WINDOW_WIDTH = 1280
+WINDOW_HEIGHT = 720
 
-pg.display.set_caption("Simulador de la Vida I")
+CAPTION = "Simulador de la Vida I"
+PERSONAJE_FILE = "personaje.png"     # Archivo de la imagen del personaje
+COLORS = {
+    'WHITE': (255, 255, 255),
+    'RED': (255, 0, 0),
+    'BLUE': (0, 0, 255),
+    'BLACK': (0, 0, 0)
+}
+run = True
+FPS = 60
 
-personaje = pg.image.load("personaje.png").convert_alpha() # Cargamos el personaje
-rectPersonaje = personaje.get_rect()              
 
-### Configuramos una serie de figuras
+
+### Configuración inicial ###
+screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+pygame.display.set_caption(CAPTION)
+clock = pygame.time.Clock()
+
+
+
+### Cargamos el personaje y estructuras ###
+personaje = pygame.image.load(PERSONAJE_FILE).convert_alpha()    # Cargamos el personaje
+rectPersonaje = personaje.get_rect()                            # Hitbox del personaje
+
+pygame.draw.rect(screen, (0, 0, 255), rectPersonaje)                # Dibujamos el rectángulo azul detras del personaje
+screen.blit(personaje, rectPersonaje)                               # Dibujamos el personaje
+pygame.Rect.update(rectPersonaje, (0,378), personaje.get_size())    # Actualizamos la posición del personaje
+
 plataformas = [
-    pg.Rect(0, 670, 1280, 50),  # Suelo
-    pg.Rect(500, 600, 280, 50)
+    pygame.Rect(0, 670, 1280, 50),  # Suelo
+    pygame.Rect(500, 600, 280, 50)
 ]  
 
-clock = pg.time.Clock()
 
-run = True
+
+### Funciones ###
+def draw():
+    """Dibuja todos los elementos en la pantalla"""
+    screen.fill(COLORS['WHITE'])    # Establecemos el fondo blanco  
+    for plataforma in plataformas:
+        pygame.draw.rect(screen, COLORS['RED'], plataforma)  # Dibujamos el rectángulo rojo
+
+    pygame.draw.rect(screen, COLORS['BLUE'], rectPersonaje) # Dibujamos el rectángulo azul detras del personaje
+    
+    screen.blit(personaje, rectPersonaje)          # Dibujamos el personaje
 
 def movement():
+    """Maneja el movimiento del personaje basado en la entrada del teclado"""
     global VELOCITY_Y, jumping, GRAVITY, JUMP_HEIGHT
     if jumping:
         rectPersonaje.y -= VELOCITY_Y
@@ -34,17 +67,18 @@ def movement():
             VELOCITY_Y = JUMP_HEIGHT
             jumping = False
 
-    key = pg.key.get_pressed()  # Obtenemos las teclas pulsadas
-    if key[pg.K_a] == True:
+    key = pygame.key.get_pressed()  # Obtenemos las teclas pulsadas
+    if key[pygame.K_a] == True:
         rectPersonaje.x -= 5
-    if key[pg.K_d] == True:
+    if key[pygame.K_d] == True:
         rectPersonaje.x += 5
-    if key[pg.K_w] == True and not jumping:
+    if key[pygame.K_w] == True and not jumping:
         jumping = True
-    # if key[pg.K_s] == True:
+    # if key[pygame.K_s] == True:
     #     rectPersonaje.y += 5
         
 def physics():
+    """Aplica la física al personaje, incluyendo gravedad y colisiones"""
     global jumping, VELOCITY_Y
     # Aplicar gravedad solo si no está saltando
     if not jumping and rectPersonaje.y < WINDOW_HEIGHT - personaje.get_height():
@@ -57,38 +91,32 @@ def physics():
         rectPersonaje.bottom = plataforma.top
         jumping = False
         VELOCITY_Y = JUMP_HEIGHT
+        print("test")
 
 
 def coordenadas_mouse(): 
-    point = pg.mouse.get_pos()  
+    """Muestra las coordenadas del ratón en el título de la ventana"""
+    point = pygame.mouse.get_pos()  
     coordenadas = f"X: {point[0]} Y: {point[1]}"
-    pg.display.set_caption(f"Simulador de la Vida I - {coordenadas}")  # Mostramos las coordenadas en el título de la ventana
+    pygame.display.set_caption(f"Simulador de la Vida I - {coordenadas}")  # Mostramos las coordenadas en el título de la ventana
 
-pg.draw.rect(screen, (0, 0, 255), rectPersonaje) # Dibujamos el rectángulo azul detras del personaje
-pg.Rect.update(rectPersonaje, (rectPersonaje.x, rectPersonaje.y), (rectPersonaje.size[0]+70, rectPersonaje.size[1]+70))      
-screen.blit(personaje, rectPersonaje)          # Dibujamos el personaje
-pg.Rect.update(rectPersonaje, (0,378), personaje.get_size())          # Actualizamos la posición del personaje
 
+
+### Ciclo principal ###
 while run: 
+    ## Dibujo
+    draw()
 
-    screen.fill((255, 255, 255))    # Establecemos el fondo blanco  
-    for rect in plataformas:
-        pg.draw.rect(screen, (255, 0, 0), rect)  # Dibujamos el rectángulo rojo
-
-    pg.draw.rect(screen, (0, 0, 255), rectPersonaje) # Dibujamos el rectángulo azul detras del personaje
-    
-    screen.blit(personaje, rectPersonaje)          # Dibujamos el personaje
-    ### Movimiento del personaje
+    ## Movimiento del personaje
     movement()
     physics()
-    coordenadas_mouse()
+    coordenadas_mouse() # Al comentar esta linea se pone el titulo definido en la variable CAPTION
 
-
-    
-    # Manejamos los eventos
-    for event in pg.event.get():
-        if event.type == pg.QUIT:
+    ## Manejamos los eventos
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
             run = False
 
-    pg.display.flip()               # Actualizamos la pantalla
-    clock.tick(60)
+    ## Actualizamos la pantalla
+    pygame.display.flip()
+    clock.tick(FPS)
