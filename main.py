@@ -1,4 +1,5 @@
 import pygame
+from personaje import Personaje
 
 pygame.init()
 
@@ -29,15 +30,7 @@ screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption(CAPTION)
 clock = pygame.time.Clock()
 
-
-
-### Cargamos el personaje y estructuras ###
-personaje = pygame.image.load(PERSONAJE_FILE).convert_alpha()    # Cargamos el personaje
-rectPersonaje = personaje.get_rect()                            # Hitbox del personaje
-
-pygame.draw.rect(screen, (0, 0, 255), rectPersonaje)                # Dibujamos el rectángulo azul detras del personaje
-screen.blit(personaje, rectPersonaje)                               # Dibujamos el personaje
-pygame.Rect.update(rectPersonaje, (0,378), personaje.get_size())    # Actualizamos la posición del personaje
+jugador = Personaje(150, 297, PERSONAJE_FILE)
 
 plataformas = [
     pygame.Rect(0, 670, 1280, 50),  # Suelo
@@ -52,16 +45,13 @@ def draw():
     screen.fill(COLORS['WHITE'])    # Establecemos el fondo blanco  
     for plataforma in plataformas:
         pygame.draw.rect(screen, COLORS['RED'], plataforma)  # Dibujamos el rectángulo rojo
-
-    pygame.draw.rect(screen, COLORS['BLUE'], rectPersonaje) # Dibujamos el rectángulo azul detras del personaje
-    
-    screen.blit(personaje, rectPersonaje)          # Dibujamos el personaje
+    jugador.dibujar(screen)
 
 def movement():
     """Maneja el movimiento del personaje basado en la entrada del teclado"""
     global VELOCITY_Y, jumping, GRAVITY, JUMP_HEIGHT
     if jumping:
-        rectPersonaje.y -= VELOCITY_Y
+        jugador.rect.y -= VELOCITY_Y
         VELOCITY_Y -= GRAVITY
         if VELOCITY_Y < -JUMP_HEIGHT:
             VELOCITY_Y = JUMP_HEIGHT
@@ -69,26 +59,26 @@ def movement():
 
     key = pygame.key.get_pressed()  # Obtenemos las teclas pulsadas
     if key[pygame.K_a] == True:
-        rectPersonaje.x -= 5
+        jugador.rect.x -= 5
     if key[pygame.K_d] == True:
-        rectPersonaje.x += 5
+        jugador.rect.x += 5
     if key[pygame.K_w] == True and not jumping:
         jumping = True
     # if key[pygame.K_s] == True:
-    #     rectPersonaje.y += 5
+    #     jugador.rect.y += 5
         
 def physics():
     """Aplica la física al personaje, incluyendo gravedad y colisiones"""
     global jumping, VELOCITY_Y
     # Aplicar gravedad solo si no está saltando
-    if not jumping and rectPersonaje.y < WINDOW_HEIGHT - personaje.get_height():
-        rectPersonaje.y += 5
+    if not jumping and jugador.rect.y < WINDOW_HEIGHT - jugador.imagen.get_height():
+        jugador.rect.y += 5
 
     # Comprobar colisión después de mover
-    idx = rectPersonaje.collidelist(plataformas)
+    idx = jugador.rect.collidelist(plataformas)
     if idx != -1:
         plataforma = plataformas[idx]
-        rectPersonaje.bottom = plataforma.top
+        jugador.rect.bottom = plataforma.top
         jumping = False
         VELOCITY_Y = JUMP_HEIGHT
         print("test")

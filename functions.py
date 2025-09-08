@@ -4,9 +4,9 @@ def draw(screen, plataformas, hitboxPJ, personaje):
     for rect in plataformas:
         pygame.draw.rect(screen, (255, 0, 0), rect)  # Dibujamos el rectángulo rojo
 
-    pygame.draw.rect(screen, (0, 0, 255), hitboxPJ) # Dibujamos el rectángulo azul detras del personaje
+    #pygame.draw.rect(screen, (0, 0, 255), hitboxPJ) # Dibujamos el rectángulo azul detras del personaje
 
-    screen.blit(personaje, hitboxPJ)          # Dibujamos el personaje
+    #screen.blit(personaje, hitboxPJ)          # Dibujamos el personaje
 
 def movement():
     global VELOCITY_Y, jumping, GRAVITY, JUMP_HEIGHT
