@@ -17,6 +17,7 @@ class Personaje:
         self.GRAVITY = GRAVITY
         self.JUMP_HEIGHT = JUMP_HEIGHT
         self.VELOCITY_Y = VELOCITY_Y
+        self.onFloor = False
     
 
 
@@ -24,7 +25,7 @@ class Personaje:
         pygame.draw.rect(surface, (0, 0, 255), self.rect)                # Dibujamos el rectángulo azul detras del personaje
         surface.blit(self.imagen, self.rect)                               # Dibujamos el personaje
 
-    def movement(self):
+    def movimiento(self):
         """Maneja el movimiento del personaje basado en la entrada del teclado"""
         if self.jumping:
             self.rect.y -= self.VELOCITY_Y
@@ -36,16 +37,21 @@ class Personaje:
         key = pygame.key.get_pressed()  # Obtenemos las teclas pulsadas
         if key[pygame.K_a] == True:
             self.rect.x -= 5
+            self.onFloor = False # Si se desplaza vuelve a comprobarse la gravedad y colisiones
         if key[pygame.K_d] == True:
             self.rect.x += 5
+            self.onFloor = False # Si se desplaza vuelve a comprobarse la gravedad y colisiones
         if key[pygame.K_w] == True and not self.jumping:
             self.jumping = True
+            self.onFloor = False # Si se desplaza vuelve a comprobarse la gravedad y colisiones
+        
 
 
-    def physics(self, plataformas):
-        """Aplica la física al personaje, incluyendo gravedad y colisiones"""
-        if not self.jumping and self.rect.y < WINDOW_HEIGHT - self.imagen.get_height():
+    def fisicas(self, plataformas):
+        """Aplica la física al personaje, incluyendo gravedad y colisiones. Si ya está en el suelo, hasta que no se desplace en X no vuelve a actuar la gravedad"""
+        if not self.jumping and self.rect.y < WINDOW_HEIGHT - self.imagen.get_height() and not self.onFloor:
             self.rect.y += 5
+            print("Applying gravity, move detected")
 
         # Comprobar colisión después de mover
         idx = self.rect.collidelist(plataformas)
@@ -54,4 +60,5 @@ class Personaje:
             self.rect.bottom = plataforma.top
             self.jumping = False
             self.VELOCITY_Y = self.JUMP_HEIGHT
-            print("test")
+            self.onFloor = True
+            print("Colide, should be on floor now")

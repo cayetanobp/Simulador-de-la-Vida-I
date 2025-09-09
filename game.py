@@ -48,8 +48,8 @@ class Game:
             self.draw()
 
             ## Movimiento del personaje
-            self.jugador.movement()
-            self.jugador.physics(self.plataformas)
+            self.jugador.movimiento()
+            self.jugador.fisicas(self.plataformas)
             self.coordenadas_mouse() # Al comentar esta linea se pone el titulo definido en la variable CAPTION
 
             ## Manejamos los eventos
