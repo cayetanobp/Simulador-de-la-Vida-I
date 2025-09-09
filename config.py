@@ -3,6 +3,9 @@ GRAVITY = 1
 JUMP_HEIGHT = 15
 VELOCITY_Y = JUMP_HEIGHT
 
+# Limite de la pantalla para la camara
+LIMITE_PANTALLA = 150
+
 WINDOW_WIDTH = 1280
 WINDOW_HEIGHT = 720
 

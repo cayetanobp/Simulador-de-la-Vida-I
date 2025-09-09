@@ -1,6 +1,6 @@
 import pygame
 from personaje import Personaje
-from config import WINDOW_WIDTH, WINDOW_HEIGHT, CAPTION, PERSONAJE_FILE, COLORS, running, FPS
+from config import WINDOW_WIDTH, WINDOW_HEIGHT, CAPTION, PERSONAJE_FILE, COLORS, running, FPS, LIMITE_PANTALLA
 
 
 class Game:
@@ -13,7 +13,7 @@ class Game:
         pygame.display.set_caption(CAPTION)
         self.clock = pygame.time.Clock()
 
-        self.jugador = Personaje(150, 297, PERSONAJE_FILE)
+        self.jugador = Personaje(150, 297, PERSONAJE_FILE, 1)
 
         self.plataformas = [
             pygame.Rect(0, 670, 1280, 50),  # Suelo
@@ -44,11 +44,15 @@ class Game:
     ### Ciclo principal ###
     def run(self):
         while self.running: 
+
+            # Posición de la camara inicialmente en 0,0
+            POSICION_CAMARA = [0, 0] 
+
             ## Dibujo
             self.draw()
 
             ## Movimiento del personaje
-            self.jugador.movimiento()
+            POSICION_CAMARA = self.jugador.movimiento()
             self.jugador.fisicas(self.plataformas)
             self.coordenadas_mouse() # Al comentar esta linea se pone el titulo definido en la variable CAPTION
 

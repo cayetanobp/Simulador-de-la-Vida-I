@@ -7,7 +7,7 @@ import pygame
 from config import VELOCITY_Y, JUMP_HEIGHT, GRAVITY, WINDOW_HEIGHT, jumping, COLORS
 
 class Personaje:
-    def __init__(self, eje_x, eje_y, imagen_del_personaje):
+    def __init__(self, eje_x, eje_y, imagen_del_personaje, tipo):
         ### Cargamos el personaje y estructuras ###
         self.imagen = pygame.image.load(imagen_del_personaje).convert_alpha()    # Cargamos el personaje
         self.rect = self.imagen.get_rect()                            # Hitbox del personaje
@@ -18,6 +18,7 @@ class Personaje:
         self.JUMP_HEIGHT = JUMP_HEIGHT
         self.VELOCITY_Y = VELOCITY_Y
         self.onFloor = False
+        self.tipo = tipo
     
 
 
@@ -26,6 +27,31 @@ class Personaje:
         surface.blit(self.imagen, self.rect)                               # Dibujamos el personaje
 
     def movimiento(self):
+
+        """Vamos a definir la interacción de la camara con el personaje"""
+        posicion_camara = [0,0]
+
+        # Debemos saber donde esta el personaje dentro de nuestro espacio
+        self.rect.x = self.rect.x + delta_x
+        self.rect.y = self.rect.y + delta_y
+
+        if self.tipo == 1:
+            # Si el jugador es de tipo 1, quiere decir que es nuestro personaje
+            # la camara se moveria de izquierda a darecha, de momento solo existe
+            # este tipo pero en un futuro existiran mas
+            if self.rect.derecha > (config.WINDOW_WIDTH - config.LIMITE_PANTALLA):
+
+                posicion_camara[0] = (config.WINDOW_WIDTH - config.LIMITE_PANTALLA) - self.rect.derecha
+                self.rect.x = config.WINDOW_WIDTH - config.LIMITE_PANTALLA
+
+            if self.rect.izquierda < config.LIMITE_PANTALLA:
+                
+                posicion_camara[0] = config.LIMITE_PANTALLA - self.rect.izquierda
+                self.rect.y = config.LIMITE_PANTALLA
+            return posicion_camara
+
+
+
         """Maneja el movimiento del personaje basado en la entrada del teclado"""
         if self.jumping:
             self.rect.y -= self.VELOCITY_Y
