@@ -6,4 +6,4 @@ class Plataforma:
         self.color = color
 
     def draw(self, surface):
-        pygame.draw.rect(surface, self.color, self.rect)
+        pygame.draw.rect(surface, self.color, self.rect) 
