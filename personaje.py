@@ -63,16 +63,16 @@ class Personaje:
         
 
 
-    def fisicas(self, plataformas):
+    def fisicas(self, tiles):
         """Aplica la física al personaje, incluyendo gravedad y colisiones. Si ya está en el suelo, hasta que no se desplace en X no vuelve a actuar la gravedad"""
         if not self.jumping and self.rect.y < WINDOW_HEIGHT - self.imagen.get_height() and not self.onFloor:
             self.rect.y += 5
             print("Applying gravity, move detected")
 
         # Comprobar colisión después de mover
-        idx = self.rect.collidelist(plataformas)
+        idx = self.rect.collidelist(tiles)
         if idx != -1:
-            plataforma = plataformas[idx]
+            plataforma = tiles[idx]
             self.rect.bottom = plataforma.top
             self.jumping = False
             self.VELOCITY_Y = self.JUMP_HEIGHT
