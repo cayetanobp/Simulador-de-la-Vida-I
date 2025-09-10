@@ -4,7 +4,7 @@ ahora es el unico personaje jugable
 """
 
 import pygame
-from config import VELOCITY_Y, JUMP_HEIGHT, GRAVITY, WINDOW_HEIGHT, jumping, COLORS
+from config import VELOCITY_Y, JUMP_HEIGHT, GRAVITY, WINDOW_WIDTH, WINDOW_HEIGHT, jumping, COLORS, LIMITE_PANTALLA
 
 class Personaje:
     def __init__(self, eje_x, eje_y, imagen_del_personaje, tipo):
@@ -28,27 +28,6 @@ class Personaje:
 
     def movimiento(self):
 
-        """Vamos a definir la interacción de la camara con el personaje"""
-        posicion_camara = [0,0]
-
-        # Debemos saber donde esta el personaje dentro de nuestro espacio
-        self.rect.x = self.rect.x + delta_x
-        self.rect.y = self.rect.y + delta_y
-
-        if self.tipo == 1:
-            # Si el jugador es de tipo 1, quiere decir que es nuestro personaje
-            # la camara se moveria de izquierda a darecha, de momento solo existe
-            # este tipo pero en un futuro existiran mas
-            if self.rect.derecha > (config.WINDOW_WIDTH - config.LIMITE_PANTALLA):
-
-                posicion_camara[0] = (config.WINDOW_WIDTH - config.LIMITE_PANTALLA) - self.rect.derecha
-                self.rect.x = config.WINDOW_WIDTH - config.LIMITE_PANTALLA
-
-            if self.rect.izquierda < config.LIMITE_PANTALLA:
-                
-                posicion_camara[0] = config.LIMITE_PANTALLA - self.rect.izquierda
-                self.rect.y = config.LIMITE_PANTALLA
-            return posicion_camara
 
 
 
@@ -70,6 +49,17 @@ class Personaje:
         if key[pygame.K_w] == True and not self.jumping:
             self.jumping = True
             self.onFloor = False # Si se desplaza vuelve a comprobarse la gravedad y colisiones
+        
+        
+        """Vamos a definir la interacción de la camara con el personaje"""
+        # Centrar la cámara en el eje X del personaje
+        posicion_camara = [0, 0]
+        if self.tipo == 1:
+            # El offset de cámara es la diferencia entre el centro de la pantalla y el centro del personaje
+            posicion_camara[0] = (WINDOW_WIDTH // 2) - self.rect.centerx
+            # Si quieres centrar también en Y, descomenta la siguiente línea:
+            # posicion_camara[1] = (WINDOW_HEIGHT // 2) - self.rect.centery
+            return posicion_camara
         
 
 
