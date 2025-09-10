@@ -22,16 +22,14 @@ class Personaje:
     
 
 
-    def dibujar(self, surface):
-        pygame.draw.rect(surface, (0, 0, 255), self.rect)                # Dibujamos el rectángulo azul detras del personaje
-        surface.blit(self.imagen, self.rect)                               # Dibujamos el personaje
+    def dibujar(self, surface, cam_offset):
+        jugador_offset = self.rect.move(cam_offset[0], cam_offset[1])
+        pygame.draw.rect(surface, (0, 0, 255), jugador_offset, 1) # Hitbox azul del personaje
+        surface.blit(self.imagen, jugador_offset)                             # Dibujamos el personaje
 
     def movimiento(self):
-
-
-
-
         """Maneja el movimiento del personaje basado en la entrada del teclado"""
+        # Salto
         if self.jumping:
             self.rect.y -= self.VELOCITY_Y
             self.VELOCITY_Y -= self.GRAVITY
@@ -39,18 +37,19 @@ class Personaje:
                 self.VELOCITY_Y = self.JUMP_HEIGHT
                 self.jumping = False
 
-        key = pygame.key.get_pressed()  # Obtenemos las teclas pulsadas
+        # Obtenemos las teclas pulsadas
+        # Con onFloor si se desplaza vuelve a comprobarse la gravedad y colisiones
+        key = pygame.key.get_pressed()  
         if key[pygame.K_a] == True:
             self.rect.x -= 5
-            self.onFloor = False # Si se desplaza vuelve a comprobarse la gravedad y colisiones
+            self.onFloor = False 
         if key[pygame.K_d] == True:
             self.rect.x += 5
-            self.onFloor = False # Si se desplaza vuelve a comprobarse la gravedad y colisiones
+            self.onFloor = False 
         if key[pygame.K_w] == True and not self.jumping:
             self.jumping = True
-            self.onFloor = False # Si se desplaza vuelve a comprobarse la gravedad y colisiones
-        
-        
+            self.onFloor = False
+
         """Vamos a definir la interacción de la camara con el personaje"""
         # Centrar la cámara en el eje X del personaje
         posicion_camara = [0, 0]

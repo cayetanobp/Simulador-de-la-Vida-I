@@ -27,24 +27,23 @@ class Game:
             self.tiles.append(rect)
 
         self.running = running
-        self.FPS = FPS
 
 
 
     ### Funciones ###
     def draw(self, cam_offset):
         """Dibuja todos los elementos en la pantalla usando el offset de cámara"""
-        self.screen.fill(COLORS['SKYBLUE'])    # Establecemos el fondo azul cielo 
-
-        # Dibujamos los tiles del suelo
+        # Fondo
+        self.screen.fill(COLORS['SKYBLUE'])    
+        
+        # Tiles del suelo con offset
         for rect in self.tiles:
             rect_offset = rect.move(cam_offset[0], cam_offset[1])
             self.screen.blit(self.tile_img, rect_offset)
 
-        # Dibujar el personaje con offset
-        jugador_offset = self.jugador.rect.move(cam_offset[0], cam_offset[1])
-        pygame.draw.rect(self.screen, (0, 0, 255), jugador_offset, 1) # Hitbox azul del personaje
-        self.screen.blit(self.jugador.imagen, jugador_offset)
+        # Personaje
+        self.jugador.dibujar(self.screen, cam_offset)
+        
 
     def coordenadas_mouse(self): 
         """Muestra las coordenadas del ratón en el título de la ventana"""
@@ -63,6 +62,8 @@ class Game:
             if cam_offset is not None:
                 POSICION_CAMARA = cam_offset
             self.jugador.fisicas(self.tiles)
+
+            # Coordenadas del raton
             self.coordenadas_mouse() # Al comentar esta linea se pone el titulo definido en la variable CAPTION
 
             # Dibujo con offset de cámara
@@ -75,4 +76,4 @@ class Game:
 
             # Actualizamos la pantalla
             pygame.display.flip()
-            self.clock.tick(self.FPS)
+            self.clock.tick(FPS)
