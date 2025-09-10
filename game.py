@@ -1,6 +1,6 @@
 import pygame
 from personaje import Personaje
-from config import WINDOW_WIDTH, WINDOW_HEIGHT, CAPTION, PERSONAJE_FILE, COLORS, running, FPS, LIMITE_PANTALLA
+from config import WINDOW_WIDTH, WINDOW_HEIGHT, CAPTION, PERSONAJE_FILE, COLORS, running, FPS, LIMITE_PANTALLA, TILE_SIZE, CUADRICULAS_FILE, SUELO_WIDTH, SUELO_EJE_Y
 
 
 class Game:
@@ -15,12 +15,24 @@ class Game:
 
         self.jugador = Personaje(150, 297, PERSONAJE_FILE, 1)
 
-        self.plataformas = [
-            pygame.Rect(0, 670, 3000, 50),  # Suelo extendido
-            pygame.Rect(500, 600, 280, 50),
-            pygame.Rect(1500, 600, 400, 50),  # Plataforma adicional lejos a la derecha
-            pygame.Rect(2500, 500, 200, 50)   # Otra plataforma aún más lejos
-        ]  
+        ### BORRAR ESTO CUANDO VEAS LOS CAMBIOS
+        # self.plataformas = [
+        #     pygame.Rect(0, 670, 3000, 50),  # Suelo extendido
+        #     pygame.Rect(500, 600, 280, 50),
+        #     pygame.Rect(1500, 600, 400, 50),  # Plataforma adicional lejos a la derecha
+        #     pygame.Rect(2500, 500, 200, 50)   # Otra plataforma aún más lejos
+        # ]  
+
+        # Cargar los tiles 
+        self.tile_img = pygame.image.load(CUADRICULAS_FILE).convert_alpha()
+        self.tile_img = pygame.transform.scale(self.tile_img, (TILE_SIZE, TILE_SIZE))
+
+        # Creamos cada cuadricula y guardamos la lista como instancia de clase
+        self.tiles = []
+        for x in range(0, SUELO_WIDTH, TILE_SIZE):
+            # Vamos a crear un rectangulo por cada tile
+            rect = pygame.Rect(x, SUELO_EJE_Y, TILE_SIZE, TILE_SIZE)
+            self.tiles.append(rect)
 
         self.running = running
         self.FPS = FPS
@@ -30,11 +42,18 @@ class Game:
     ### Funciones ###
     def draw(self, cam_offset):
         """Dibuja todos los elementos en la pantalla usando el offset de cámara"""
-        self.screen.fill(COLORS['WHITE'])    # Establecemos el fondo blanco  
-        for plataforma in self.plataformas:
-            # Dibujar cada plataforma con el offset de cámara
-            plataforma_offset = plataforma.move(cam_offset[0], cam_offset[1])
-            pygame.draw.rect(self.screen, COLORS['RED'], plataforma_offset)  # Dibujamos el rectángulo rojo
+        self.screen.fill(COLORS['SKYBLUE'])    # Establecemos el fondo blanco 
+        ### BORRAR ESTO CUANDO VEAS LOS CAMBIOS 
+        # for plataforma in self.plataformas:
+        #     # Dibujar cada plataforma con el offset de cámara
+        #     plataforma_offset = plataforma.move(cam_offset[0], cam_offset[1])
+        #     pygame.draw.rect(self.screen, COLORS['RED'], plataforma_offset)  # Dibujamos el rectángulo rojo
+
+        # Dibujamos los tiles del suelo
+        for rect in self.tiles:
+            rect_offset = rect.move(cam_offset[0], cam_offset[1])
+            self.screen.blit(self.tile_img, rect_offset)
+
         # Dibujar el personaje con offset
         jugador_offset = self.jugador.rect.move(cam_offset[0], cam_offset[1])
         pygame.draw.rect(self.screen, (0, 0, 255), jugador_offset)
@@ -56,7 +75,7 @@ class Game:
             cam_offset = self.jugador.movimiento()
             if cam_offset is not None:
                 POSICION_CAMARA = cam_offset
-            self.jugador.fisicas(self.plataformas)
+            self.jugador.fisicas(self.tiles)      # Aqui antes habia un self.plataformas
             self.coordenadas_mouse() # Al comentar esta linea se pone el titulo definido en la variable CAPTION
 
             # Dibujo con offset de cámara
