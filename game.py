@@ -14,6 +14,16 @@ class Game:
         self.clock = pygame.time.Clock()
 
         self.jugador = Personaje(150, 297, PERSONAJE_FILE, 1)
+        
+        """
+        Vamos a crear el sistema de mapa añadiendo un mapa en este inicializador que vamos a poder cambiar
+        cuando queramos, mas adelante se explicara el sistema de mapas
+        """
+
+        # Hay un problema con el mapa si se pone "...","##...", ..., ahora mismo tengo sueño por lo que si puedes mirar eso para ponerlo en forma de array
+        self.mapa = [
+            "...#.....#.................................#.................###..............##...............##..............########################."
+        ]
 
         # Cargar los tiles 
         self.tile_img = pygame.image.load(CUADRICULAS_FILE).convert_alpha()
@@ -21,16 +31,32 @@ class Game:
 
         # Creamos cada cuadricula y guardamos la lista como instancia de clase
         self.tiles = []
-        for x in range(0, SUELO_WIDTH, TILE_SIZE):
-            # Vamos a crear un rectangulo por cada tile
-            rect = pygame.Rect(x, SUELO_EJE_Y, TILE_SIZE, TILE_SIZE)
-            self.tiles.append(rect)
+
+        # Inicializamos el mapa
+        self.parser_mapa() 
 
         self.running = running
 
-
-
     ### Funciones ###
+
+    def parser_mapa(self):
+        for fila_idx, fila in enumerate(self.mapa):
+            for celda_idx, celda in enumerate(fila):
+                x = celda_idx * TILE_SIZE
+                y = SUELO_EJE_Y
+
+                # Si la celda es un "." digamos que es el suelo
+                if celda == ".":
+                    rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+                    self.tiles.append(rect)
+                # Si la celda es un "#" vamos a poner de momento que sea un obstaculo (no es definitivo evidentemente)
+                elif celda == "#":
+                    rect = pygame.Rect(x, y, TILE_SIZE, TILE_SIZE)
+                    rect2 = pygame.Rect(x, y - TILE_SIZE, TILE_SIZE, TILE_SIZE)
+                    self.tiles.extend([rect, rect2])
+        
+
+
     def draw(self, cam_offset):
         """Dibuja todos los elementos en la pantalla usando el offset de cámara"""
         # Fondo
@@ -56,7 +82,8 @@ class Game:
     ### Ciclo principal ###
     def run(self):
         POSICION_CAMARA = [0, 0]
-        while self.running: 
+        while self.running:
+            
             # Movimiento del personaje y obtención del offset de cámara
             cam_offset = self.jugador.movimiento()
             if cam_offset is not None:

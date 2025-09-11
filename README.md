@@ -3,7 +3,7 @@
 ## Creación del entorno virtual
 ```
 python -m venv venv
-.\venv\Scripts\Activate.ps1
+.\.venv\Scripts\Activate.ps1
 ```
 ## Descripción
 Simulación en tiempo real donde el jugador puede construir su casa, sembrar y cuidar cultivos, recolectar recursos y expandir su granja. Proyecto desarrollado con **Pygame**, pensado para trabajar en equipo.
